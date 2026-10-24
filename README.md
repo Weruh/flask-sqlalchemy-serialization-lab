@@ -28,30 +28,44 @@ and reviews without errors.
 
 Fork and clone the lab repo.
 
-Run `pipenv install` and `pipenv shell` .
+Install dependencies and apply the checked-in migration:
 
 ```console
 $ pipenv install
-$ pipenv shell
-```
-
-Change into the `server` directory:
-
-```console
 $ cd server
+$ pipenv run flask --app app db upgrade
+$ pipenv run python seed.py
 ```
 
-The file `server/models.py` defines models named `Customer` and `Item`.
-
-Run the following commands to create the tables for customers and items.
+Run the tests from the repository root:
 
 ```console
-$ flask db init
-$ flask db migrate -m "initial migration"
-$ flask db upgrade head
+$ cd ..
+$ pipenv run pytest -q
 ```
 
-## Instructions
+`server/models.py` defines `Customer`, `Item`, and `Review`, with reviews linking
+customers to items. `Customer.items` and `Item.customers` provide convenient
+access through reviews. `CustomerSchema`, `ItemSchema`, and `ReviewSchema`
+serialize these records with nested relationships while excluding circular
+references and foreign key columns.
+
+For example, a serialized review contains its customer and item:
+
+```json
+{
+  "id": 1,
+  "comment": "zipper broke the first week",
+  "customer": {"id": 1, "name": "Tal Yuri"},
+  "item": {"id": 1, "name": "Laptop Backpack", "price": 49.99}
+}
+```
+
+## Original Lab Instructions
+
+The steps below describe the exercise. The models, schemas, and initial
+migration are already implemented in this repository; use the setup commands
+above to run the completed project.
 
 ### Task 1: Define the Problem
 
